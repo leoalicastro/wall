@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wall</title>
+</head>
+<body>
+    Welcome {{ users.fname}}!
+    <p><form action = "/message" method="POST"></p>
+    {% csrf_token %}
+    <label for="new_message">Post a message</label>
+    <input type="text" name="new_message">
+    <input type="hidden" name="user">
+    <button>Post</button>
+    </form>
+    <form action="/logout" method ="POST">
+        {% csrf_token %}
+        <label for="logout"><button>Logout</button></label>
+        <input type = "hidden" name="logout">
+    </form>
+    {% for message in messages %}
+        <p><h4>{{ message.poster.fname }} posted at 
+        {{ message.created_at }}</p></h4>
+        <p>{{ message.new_message }}</p>
+        {% if this_user.id == message.poster.id %}
+            <a href="/delete/{{ message.id }}"><button>Delete</button></a>
+        {% endif %}
+        {% for comment in message.message_comments.all %}
+            <p><h5>{{ comment.poster_comment.fname }} commented at 
+            {{ comment.created_at }}</p></h5>
+            <p>{{ comment.new_comment }}</p>
+        {% endfor %}
+        <form action="/comment/{{ message.id }}" method="POST">
+            {% csrf_token %}
+            <label for="new_comment">Post a comment</label>
+            <input type="text" name="new_comment">
+            <input type="hidden" name="poster_comment">
+            <input type="hidden" name="message_comment">
+            <button type="submit">Comment</button> 
+        </form>
+    {% endfor %}
+</body>
+</html>
